@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Election Voting System</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header><h1>🗳️ Election Voting System</h1></header>
+
+    <section class="card">
+      <h2>Add Candidate</h2>
+      <div class="row">
+        <input id="candId" placeholder="Candidate ID" />
+        <input id="candName" placeholder="Candidate Name" />
+        <button id="addBtn">Add</button>
+      </div>
+      <div id="candMsg" class="msg"></div>
+    </section>
+
+    <section class="card">
+      <h2>Cast Vote</h2>
+      <div class="row">
+        <input id="voterId" placeholder="Voter ID" />
+        <input id="voteCandId" placeholder="Candidate ID" />
+        <button id="voteBtn">Vote</button>
+      </div>
+      <div id="voteMsg" class="msg"></div>
+    </section>
+
+    <section class="card">
+      <h2>Candidates</h2>
+      <div id="candidateList">Loading...</div>
+      <button id="refreshC">Refresh</button>
+    </section>
+
+    <section class="card">
+      <h2>Votes</h2>
+      <div id="voteList">Loading...</div>
+      <button id="refreshV">Refresh</button>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <button id="findWinner">Find Winner</button>
+      <div id="winner" class="winner"></div>
+    </section>
+
+    <section class="card admin">
+      <h2>Admin</h2>
+      <button id="resetBtn">Reset All (admin)</button>
+    </section>
+
+    <footer>
+      <small>Built with C + Node.js + Vanilla JS</small>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
