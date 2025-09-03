@@ -1,34 +1,41 @@
 const API_BASE = "/api";
 
-// Add Candidate
-async function addCandidate() {
-  const id = document.getElementById("candidateId").value.trim();
-  const name = document.getElementById("candidateName").value.trim();
-  if (!id || !name) return alert("Enter ID and Name");
-
-  const res = await fetch(`${API_BASE}/addCandidate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, name })
-  });
-  const data = await res.json();
-  alert(data.msg || "Candidate added");
-  loadCandidates();
+// Fetch candidates
+async function getCandidates() {
+  const response = await fetch('http://localhost:5000/api/candidates');
+  const data = await response.json();
+  return data;
 }
 
-// Cast Vote
-async function castVote() {
-  const voterId = document.getElementById("voterId").value.trim();
-  const candidateId = document.getElementById("voteCandidateId").value.trim();
-  if (!voterId || !candidateId) return alert("Enter Voter ID and Candidate ID");
-
-  const res = await fetch(`${API_BASE}/vote`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ voterId, candidateId })
+// Add candidate
+async function addCandidate(name, party) {
+  const response = await fetch('http://localhost:5000/api/candidates', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, party }),
   });
-  const data = await res.json();
-  alert(data.msg || "Vote casted");
+  return await response.json();
+}
+
+// Cast vote
+async function castVote(voterId, candidateId) {
+  const response = await fetch('http://localhost:5000/api/votes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ voter_id: voterId, candidate_id: candidateId }),
+  });
+  return await response.json();
+}
+
+// Get results
+async function getResults() {
+  const response = await fetch('http://localhost:5000/api/results');
+  const data = await response.json();
+  return data;
 }
 
 // Load Candidates

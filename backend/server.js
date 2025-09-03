@@ -1,53 +1,60 @@
 const express = require("express");
-const path = require("path");
-const electionService = require("./services/electionService");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const supabase = require("./config/supabase");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static("../frontend"));
 
-// Serve frontend static files
-app.use("/", express.static(path.join(__dirname, "..", "frontend")));
+// Endpoints for candidates
+app.post("/api/candidates", async (req, res) => {
+  const { name, party } = req.body;
+  const { data, error } = await supabase
+    .from('candidates')
+    .insert([{ name, party }]);
 
-// API: Add candidate
-app.post("/api/addCandidate", (req, res) => {
-  const { id, name } = req.body;
-  if (!id || !name) return res.status(400).json({ ok: false, msg: "id_or_name_missing" });
-  const out = electionService.addCandidate(id, name);
-  res.json(out);
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ success: true, data });
 });
 
-// API: Cast vote
-app.post("/api/vote", (req, res) => {
-  const { voterId, candidateId } = req.body;
-  if (!voterId || !candidateId) return res.status(400).json({ ok: false, msg: "voter_or_candidate_missing" });
-  const out = electionService.vote(voterId, candidateId);
-  res.json(out);
+app.get("/api/candidates", async (req, res) => {
+  const { data, error } = await supabase
+    .from('candidates')
+    .select('*');
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
 });
 
-// API: List candidates
-app.get("/api/candidates", (req, res) => {
-  res.json(electionService.listCandidates());
+// Endpoints for votes
+app.post("/api/votes", async (req, res) => {
+  const { voter_id, candidate_id } = req.body;
+  const { data, error } = await supabase
+    .from('votes')
+    .insert([{ voter_id, candidate_id }]);
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ success: true, data });
 });
 
-// API: List votes
-app.get("/api/votes", (req, res) => {
-  res.json(electionService.listVotes());
-});
+app.get("/api/results", async (req, res) => {
+  const { data, error } = await supabase
+    .from('candidates')
+    .select(`
+      id,
+      name,
+      party,
+      votes:votes(count)
+    `);
 
-// API: Show results
-app.get("/api/results", (req, res) => {
-  res.json(electionService.results());
-});
-
-// API: Reset
-app.post("/api/reset", (req, res) => {
-  res.json(electionService.reset());
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Backend running at http://localhost:${PORT}`);
-  console.log(`👉 Frontend available at http://localhost:${PORT}/index.html`);
+  console.log(`Server running on port ${PORT}`);
 });
