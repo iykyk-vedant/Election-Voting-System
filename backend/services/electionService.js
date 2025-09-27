@@ -1,52 +1,103 @@
-// In-memory data storage
-let candidates = [];
-let votes = [];
-let votedUsers = new Set();
+const { spawn } = require('child_process');
+const path = require('path');
+
+// Path to the C program
+const electionProgram = path.join(__dirname, '..', 'c_program', 'election');
 
 const electionService = {
-  addCandidate: (id, name) => {
-    if (candidates.find(c => c.id === id)) {
-      return { ok: false, msg: "candidate_exists" };
+  // Execute the C program with given arguments and return a promise with the result
+  executeCProgram: (args) => {
+    return new Promise((resolve, reject) => {
+      console.log(`Executing C program with args: ${args.join(' ')}`);
+      const child = spawn(electionProgram, args, { cwd: path.join(__dirname, '..', 'c_program') });
+      
+      let stdout = '';
+      let stderr = '';
+      
+      child.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+      
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      child.on('close', (code) => {
+        console.log(`C program exited with code ${code}`);
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        
+        if (code === 0) {
+          try {
+            const result = JSON.parse(stdout.trim());
+            resolve(result);
+          } catch (e) {
+            reject(new Error(`Failed to parse JSON output: ${stdout}`));
+          }
+        } else {
+          reject(new Error(`C program exited with code ${code}: ${stderr}`));
+        }
+      });
+      
+      child.on('error', (error) => {
+        console.error(`Failed to start C program: ${error.message}`);
+        reject(new Error(`Failed to start C program: ${error.message}`));
+      });
+    });
+  },
+
+  addCandidate: async function(id, name) {
+    try {
+      const result = await electionService.executeCProgram(['add', id.toString(), name]);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
     }
-    candidates.push({ id, name, voteCount: 0 });
-    return { ok: true, msg: "candidate_added", candidates };
   },
 
-  vote: (voterId, candidateId) => {
-    if (votedUsers.has(voterId)) {
-      return { ok: false, msg: "already_voted" };
+  vote: async function(voterId, candidateId) {
+    try {
+      const result = await electionService.executeCProgram(['vote', voterId.toString(), candidateId.toString()]);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
     }
-    const candidate = candidates.find(c => c.id === candidateId);
-    if (!candidate) {
-      return { ok: false, msg: "candidate_not_found" };
+  },
+
+  listCandidates: async function() {
+    try {
+      const result = await electionService.executeCProgram(['list_candidates']);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
     }
-    candidate.voteCount++;
-    votes.push({ voterId, candidateId });
-    votedUsers.add(voterId);
-    return { ok: true, msg: "vote_casted", candidate };
   },
 
-  listCandidates: () => {
-    return { ok: true, candidates };
-  },
-
-  listVotes: () => {
-    return { ok: true, votes };
-  },
-
-  results: () => {
-    if (candidates.length === 0) {
-      return { ok: false, msg: "no_candidates" };
+  listVotes: async function() {
+    try {
+      const result = await electionService.executeCProgram(['list_votes']);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
     }
-    const sorted = [...candidates].sort((a, b) => b.voteCount - a.voteCount);
-    return { ok: true, results: sorted };
   },
 
-  reset: () => {
-    candidates = [];
-    votes = [];
-    votedUsers = new Set();
-    return { ok: true, msg: "reset_done" };
+  results: async function() {
+    try {
+      const result = await electionService.executeCProgram(['results']);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
+    }
+  },
+
+  reset: async function() {
+    try {
+      const result = await electionService.executeCProgram(['reset']);
+      return result;
+    } catch (error) {
+      return { ok: false, msg: error.message };
+    }
   }
 };
 

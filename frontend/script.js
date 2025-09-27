@@ -81,3 +81,31 @@ async function resetElection() {
   loadCandidates();
   document.getElementById("resultsList").innerHTML = "";
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Script loaded successfully');
+
+    const candidatesBtn = document.getElementById('candidatesBtn');
+    const voteBtn = document.getElementById('voteBtn');
+    const resultsBtn = document.getElementById('resultsBtn');
+
+    // Verify buttons were found
+    console.log('Candidates button:', candidatesBtn);
+    console.log('Vote button:', voteBtn);
+    console.log('Results button:', resultsBtn);
+
+    candidatesBtn.addEventListener('click', () => {
+        console.log('Candidates button clicked');
+        window.location.href = './pages/candidates.html';
+    });
+
+    voteBtn.addEventListener('click', () => {
+        console.log('Vote button clicked');
+        window.location.href = './pages/vote.html';
+    });
+
+    resultsBtn.addEventListener('click', () => {
+        console.log('Results button clicked');
+        window.location.href = './pages/results.html';
+    });
+});

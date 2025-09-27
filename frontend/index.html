@@ -3,58 +3,91 @@
 <head>
   <meta charset="utf-8" />
   <title>Election Voting System</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <header><h1>🗳️ Election Voting System</h1></header>
+    <header>
+      <h1>🗳️ Election Voting System</h1>
+      <p class="tagline">A modern voting platform powered by C and Node.js</p>
+    </header>
 
-    <section class="card">
-      <h2>Add Candidate</h2>
-      <div class="row">
-        <input id="candId" placeholder="Candidate ID" />
-        <input id="candName" placeholder="Candidate Name" />
-        <button id="addBtn">Add</button>
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalCandidates">0</div>
+        <div class="stat-label">Candidates</div>
       </div>
-      <div id="candMsg" class="msg"></div>
-    </section>
-
-    <section class="card">
-      <h2>Cast Vote</h2>
-      <div class="row">
-        <input id="voterId" placeholder="Voter ID" />
-        <input id="voteCandId" placeholder="Candidate ID" />
-        <button id="voteBtn">Vote</button>
+      <div class="stat-item">
+        <div class="stat-value" id="totalVotes">0</div>
+        <div class="stat-label">Total Votes</div>
       </div>
-      <div id="voteMsg" class="msg"></div>
-    </section>
+      <div class="stat-item">
+        <div class="stat-value" id="voterTurnout">0%</div>
+        <div class="stat-label">Voter Turnout</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>➕ Add Candidate</h2>
+        <div class="form-group">
+          <label for="candId">Candidate ID</label>
+          <input id="candId" type="number" placeholder="Enter candidate ID" />
+        </div>
+        <div class="form-group">
+          <label for="candName">Candidate Name</label>
+          <input id="candName" type="text" placeholder="Enter candidate name" />
+        </div>
+        <button id="addBtn">Add Candidate</button>
+        <div id="candMsg" class="msg" style="display: none;"></div>
+      </section>
+
+      <section class="card">
+        <h2>🗳️ Cast Vote</h2>
+        <div class="form-group">
+          <label for="voterId">Voter ID</label>
+          <input id="voterId" type="number" placeholder="Enter your voter ID" />
+        </div>
+        <div class="form-group">
+          <label for="voteCandId">Candidate ID</label>
+          <input id="voteCandId" type="number" placeholder="Enter candidate ID" />
+        </div>
+        <button id="voteBtn">Cast Vote</button>
+        <div id="voteMsg" class="msg" style="display: none;"></div>
+      </section>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>👥 Candidates</h2>
+        <div class="actions">
+          <button id="refreshC">Refresh Candidates</button>
+        </div>
+        <div class="list" id="candidateList">Loading candidates...</div>
+      </section>
+
+      <section class="card">
+        <h2>📊 Results</h2>
+        <div class="actions">
+          <button id="refreshV">Refresh Results</button>
+          <button id="findWinner">Find Winner</button>
+        </div>
+        <div class="list" id="voteList">Loading results...</div>
+        <div id="winner" class="winner-section" style="display: none; padding: 15px; border-radius: 10px; margin-top: 15px;"></div>
+      </section>
+    </div>
 
     <section class="card">
-      <h2>Candidates</h2>
-      <div id="candidateList">Loading...</div>
-      <button id="refreshC">Refresh</button>
-    </section>
-
-    <section class="card">
-      <h2>Votes</h2>
-      <div id="voteList">Loading...</div>
-      <button id="refreshV">Refresh</button>
-    </section>
-
-    <section class="card">
-      <h2>Results</h2>
-      <button id="findWinner">Find Winner</button>
-      <div id="winner" class="winner"></div>
-    </section>
-
-    <section class="card admin">
-      <h2>Admin</h2>
-      <button id="resetBtn">Reset All (admin)</button>
+      <h2>⚙️ Admin Panel</h2>
+      <div class="actions">
+        <button id="resetBtn" class="warning">Reset Election</button>
+      </div>
     </section>
 
     <footer>
-      <small>Built with C + Node.js + Vanilla JS</small>
+      <small>Built with ❤️ using C + Node.js + Supabase + Vanilla JS</small>
     </footer>
   </div>
 
