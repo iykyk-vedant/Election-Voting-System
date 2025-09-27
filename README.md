@@ -36,15 +36,14 @@ This application uses a hybrid approach:
 
 2. Install backend dependencies:
    ```bash
-   cd backend
    npm install
    ```
 
 3. Compile the C program:
    ```bash
-   cd c_program
+   cd backend/c_program
    gcc election.c -o election
-   cd ..
+   cd ../..
    ```
 
 4. Set up Supabase:
@@ -71,8 +70,7 @@ This application uses a hybrid approach:
    - `SUPABASE_KEY`: Your Supabase anon key
 5. Set the build command to: `npm install`
 6. Set the start command to: `node server.js`
-7. Set the root directory to: `backend`
-8. Deploy!
+7. Deploy!
 
 ## API Endpoints
 
@@ -94,14 +92,14 @@ Election-Voting-System/
 │   │   └── Makefile
 │   ├── config/
 │   │   └── supabase.js   # Supabase configuration
-│   ├── services/
-│   │   └── electionService.js  # Interface to C program
-│   ├── package.json
-│   └── server.js         # Main server file
+│   └── services/
+│       └── electionService.js  # Interface to C program
 ├── frontend/
 │   ├── index.html        # Main HTML file
 │   ├── style.css         # Styles
 │   └── app.js            # Client-side JavaScript
+├── package.json          # Project dependencies
+├── server.js             # Main server file
 └── README.md
 ```
 
