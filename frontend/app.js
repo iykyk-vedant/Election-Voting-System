@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://localhost:10000/api";
 
 // Utility function to show messages
 function showMessage(elementId, message, isSuccess = true) {
